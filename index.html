@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tiny Long-Memory Benchmark on Islo</title>
+    <meta
+      name="description"
+      content="A 60-second Harbor/Islo demo comparing three simple long-memory approaches."
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #f4efe3;
+        --muted: #b8aa92;
+        --paper: #15130f;
+        --panel: #211d16;
+        --line: #4f4638;
+        --gold: #f0b84f;
+        --green: #83d18b;
+        --red: #ff8e72;
+        --blue: #79b9ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(240, 184, 79, 0.16), transparent 28rem),
+          radial-gradient(circle at 80% 0%, rgba(121, 185, 255, 0.12), transparent 30rem),
+          linear-gradient(135deg, #15130f 0%, #090806 100%);
+        color: var(--ink);
+        font-family: Charter, "Bitstream Charter", "Sitka Text", Georgia, serif;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 44px 0 56px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        background: rgba(33, 29, 22, 0.82);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+        border-radius: 28px;
+      }
+
+      .intro {
+        padding: clamp(28px, 5vw, 56px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .intro::after {
+        content: "memory / update / abstain";
+        position: absolute;
+        right: -32px;
+        bottom: 24px;
+        color: rgba(244, 239, 227, 0.05);
+        font-family: "Berkeley Mono", "SFMono-Regular", Consolas, monospace;
+        font-size: clamp(28px, 5vw, 72px);
+        font-weight: 800;
+        letter-spacing: -0.08em;
+        transform: rotate(-6deg);
+        white-space: nowrap;
+      }
+
+      .eyebrow,
+      code,
+      pre,
+      .score,
+      .label {
+        font-family: "Berkeley Mono", "SFMono-Regular", Consolas, monospace;
+      }
+
+      .eyebrow {
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 820px;
+        margin: 18px 0 18px;
+        font-size: clamp(44px, 8vw, 92px);
+        line-height: 0.9;
+        letter-spacing: -0.07em;
+      }
+
+      .lede {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: clamp(18px, 2.2vw, 24px);
+        line-height: 1.45;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      a {
+        color: var(--ink);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(244, 239, 227, 0.06);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .button.primary {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #1d1608;
+      }
+
+      .leaderboard {
+        padding: 24px;
+      }
+
+      .leaderboard h2,
+      section h2 {
+        margin: 0 0 18px;
+        font-size: 22px;
+      }
+
+      .rank {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        padding: 16px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .rank:first-of-type {
+        border-top: 0;
+      }
+
+      .rank strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .rank span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .score {
+        color: var(--green);
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .stat {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .stat strong {
+        display: block;
+        color: var(--gold);
+        font-family: "Berkeley Mono", "SFMono-Regular", Consolas, monospace;
+        font-size: 24px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      section {
+        margin-top: 24px;
+        padding: 24px;
+      }
+
+      .question {
+        min-height: 250px;
+        padding: 22px;
+      }
+
+      .label {
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .question h3 {
+        margin: 10px 0;
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+
+      .question p,
+      section p,
+      li {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .pass {
+        color: var(--green);
+      }
+
+      .fail {
+        color: var(--red);
+      }
+
+      pre {
+        margin: 18px 0 0;
+        padding: 18px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.28);
+        color: #f7dca5;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 24px;
+      }
+
+      .wide-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      th,
+      td {
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--gold);
+        font-family: "Berkeley Mono", "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .callout {
+        border-left: 4px solid var(--gold);
+        padding-left: 18px;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      footer {
+        margin-top: 34px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .grid,
+        .split,
+        .wide-split,
+        .stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="hero">
+        <section class="intro card">
+          <div class="eyebrow">Harbor / Islo / Long-Memory Smoke Test</div>
+          <h1>A tiny long-memory benchmark, fanned out across Islo sandboxes.</h1>
+          <p class="lede">
+            We built a miniature LongMemEval-style demo that compares three memory
+            approaches on direct recall, stale updates, and abstention. It is intentionally
+            small: one Python file, one Harbor task wrapper, three scenario sandboxes,
+            and one shareable Islo page.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://islo.dev/">Built for Islo</a>
+            <a class="button" href="https://github.com/zozo123/longmem-mini-on-islo">Code</a>
+            <a class="button" href="https://github.com/harbor-framework/harbor">Harbor framework</a>
+            <a class="button" href="./assets/results.json">Result JSON</a>
+            <a class="button" href="./assets/parallel_islo_results.json">Parallel Islo JSON</a>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>3</strong><span>memory questions</span></div>
+            <div class="stat"><strong>3</strong><span>simple approaches</span></div>
+            <div class="stat"><strong>3</strong><span>Islo scenario sandboxes</span></div>
+            <div class="stat"><strong>1</strong><span>Harbor task wrapper</span></div>
+          </div>
+        </section>
+
+        <aside class="leaderboard card">
+          <div class="eyebrow">Latest run</div>
+          <h2>Mini Leaderboard</h2>
+          <div id="leaderboard">
+            <div class="rank">
+              <div>
+                <strong>update_aware_memory</strong>
+                <span>newest relevant fact + abstention</span>
+              </div>
+              <div class="score">3/3</div>
+            </div>
+            <div class="rank">
+              <div>
+                <strong>keyword_memory</strong>
+                <span>top lexical overlap, can pick stale facts</span>
+              </div>
+              <div class="score">2/3</div>
+            </div>
+            <div class="rank">
+              <div>
+                <strong>no_memory</strong>
+                <span>abstains because no history exists</span>
+              </div>
+              <div class="score">1/3</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="card">
+        <div class="eyebrow">Abstract</div>
+        <h2>What we did</h2>
+        <p>
+          Retrieval benchmarks usually measure whether a system can find relevant text.
+          Long-term memory needs more: the system must remember old facts, prefer newer
+          corrections, and refuse to invent answers when the memory does not contain them.
+          This demo compresses that problem into three tiny questions over five chat sessions.
+        </p>
+        <p>
+          The direct runner, <code>demo.py</code>, produces deterministic JSON results. Harbor
+          wraps the same benchmark as an eval task with a verifier and reward file. Islo runs
+          the three scenarios as separate sandbox trials and gives the result page a public share URL.
+        </p>
+      </section>
+
+      <div class="grid">
+        <article class="question card">
+          <div class="label">Direct Lookup</div>
+          <h3>What snack should I buy for Mira's study group?</h3>
+          <p>Expected: <strong>sea-salt pistachios</strong></p>
+          <p>Basic memory should recover a fact stated in an earlier session.</p>
+        </article>
+        <article class="question card">
+          <div class="label">Knowledge Update</div>
+          <h3>For the Portland trip, which airport should I use now?</h3>
+          <p>Expected: <strong>OAK</strong>, not stale <strong>SFO</strong>.</p>
+          <p>This is the important failure: keyword retrieval can find a relevant old fact and still be wrong.</p>
+        </article>
+        <article class="question card">
+          <div class="label">Abstention</div>
+          <h3>What is Sam's jacket size?</h3>
+          <p>Expected: <strong>not enough information</strong></p>
+          <p>A useful memory system should know when the answer is absent.</p>
+        </article>
+      </div>
+
+      <section class="card">
+        <div class="eyebrow">Method</div>
+        <h2>The three approaches</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>Behavior</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>no_memory</code></td>
+              <td>Has no chat history, so it abstains. It only passes the abstention case.</td>
+              <td><strong>1/3</strong></td>
+            </tr>
+            <tr>
+              <td><code>keyword_memory</code></td>
+              <td>Retrieves the top keyword-overlap session. It answers direct lookup but can pick stale evidence.</td>
+              <td><strong>2/3</strong></td>
+            </tr>
+            <tr>
+              <td><code>update_aware_memory</code></td>
+              <td>Uses lexical retrieval, prefers newer relevant facts for update questions, and abstains when evidence is missing.</td>
+              <td><strong>3/3</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="wide-split card">
+        <div>
+          <div class="eyebrow">Harbor</div>
+          <h2>How Harbor is used</h2>
+          <p>
+            Harbor is the eval wrapper. The demo includes a minimal task under
+            <code>harbor/longmem-mini/</code>: task metadata, an instruction, a Python
+            environment image, a verifier script, and an oracle solution.
+          </p>
+          <p>
+            The verifier runs the benchmark, checks the expected <code>1/3, 2/3, 3/3</code>
+            leaderboard, and writes <code>/logs/verifier/reward.txt</code>. That makes the
+            toy benchmark look like a real agent-eval task. In this local environment,
+            Docker was not running, so the Harbor task is packaged and ready but was not
+            completed through local Docker.
+          </p>
+        </div>
+        <pre><code>harbor/longmem-mini/
+  task.toml
+  instruction.md
+  environment/Dockerfile
+  environment/demo.py
+  tests/test.sh
+  solution/solve.sh
+
+harbor run -p harbor/longmem-mini -a oracle</code></pre>
+      </section>
+
+      <section class="wide-split card">
+        <div>
+          <div class="eyebrow">Islo</div>
+          <h2>How Islo is used</h2>
+          <p>
+            Islo is the execution and sharing layer. <code>islo.yaml</code> defines the
+            lightweight Python sandbox. The repo can be cloned into an Islo environment,
+            the benchmark can run there, and the static report can be served from inside
+            the sandbox. We ran the three simple scenarios across three Islo Python sandboxes
+            and got the same <code>3/3, 2/3, 1/3</code> leaderboard.
+          </p>
+          <p>
+            The important demo move is <code>islo share</code>: it turns the sandbox-hosted
+            result page into a public URL, so the GitHub/HN post can point to a live,
+            reproducible run instead of a screenshot.
+          </p>
+        </div>
+        <pre><code>islo use longmem-mini \
+  --source github://zozo123/longmem-mini-on-islo
+
+python demo.py
+python3 parallel_islo_eval.py --backend islo --prefix longmem-mini
+python -m http.server 8080 -d site
+islo share longmem-mini 8080 --public --ttl 24h
+
+harbor run -p harbor/longmem-mini -a oracle --env islo</code></pre>
+      </section>
+
+      <section class="split card">
+        <div>
+          <div class="eyebrow">Results</div>
+          <h2>Why the 3/2/1 result is the story</h2>
+          <p>
+            The result is not meant to be surprising. It is meant to be inspectable. A
+            no-memory system can only abstain. A keyword system improves recall, but the
+            update question exposes stale retrieval. The update-aware strategy wins because
+            it treats time and abstention as part of the task.
+          </p>
+          <p class="callout">
+            That is the smallest useful lesson for long-memory evaluation: do not only ask
+            whether memory found something. Ask whether it found the current thing, and
+            whether it knows when nothing is there.
+          </p>
+        </div>
+        <pre><code>Tiny LongMemEval-style benchmark on Islo
+This is a miniature deterministic demo,
+not an official LongMemEval score.
+
+Leaderboard
+- update_aware_memory: 3/3 (100%)
+- keyword_memory: 2/3 (67%)
+- no_memory: 1/3 (33%)</code></pre>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">Run Status</div>
+        <h2>What actually ran</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Status</th>
+              <th>Artifact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Local Python eval</td>
+              <td>Completed. Produced the <code>3/2/1</code> leaderboard.</td>
+              <td><code>runs/latest/results.json</code></td>
+            </tr>
+            <tr>
+              <td>Parallel Islo eval</td>
+              <td>Completed across three live Islo Python sandboxes, one scenario per sandbox.</td>
+              <td><code>runs/latest/parallel_islo_results.json</code></td>
+            </tr>
+            <tr>
+              <td>Harbor wrapper</td>
+              <td>Packaged as a minimal Harbor task with verifier and reward file contract.</td>
+              <td><code>harbor/longmem-mini/</code></td>
+            </tr>
+            <tr>
+              <td>Harbor local run</td>
+              <td>Attempted, but Docker was not running on this machine.</td>
+              <td><code>EVAL_REPORT.md</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">HN Post</div>
+        <h2>Suggested post</h2>
+        <p>
+          <strong>Title:</strong> Show HN: Tiny long-memory benchmark running in an Islo sandbox
+        </p>
+        <p>
+          <strong>Short text:</strong> I made a tiny LongMemEval-style benchmark that runs in
+          seconds, is packaged as a Harbor task, and was run across three Islo sandboxes.
+          It compares no memory, keyword memory, and update-aware memory on three cases:
+          direct lookup, stale update, and abstention. The point is not a leaderboard
+          score; it is an inspectable demo of what long-memory evals need to test before
+          scaling to LongMemEval or LoCoMo.
+        </p>
+      </section>
+
+      <footer>
+        Not an official LongMemEval score. Built as a small Harbor/Islo demonstration.
+      </footer>
+    </main>
+
+    <script>
+      fetch("./assets/results.json")
+        .then((response) => (response.ok ? response.json() : null))
+        .then((payload) => {
+          if (!payload) return;
+          const labels = {
+            update_aware_memory: "newest relevant fact + abstention",
+            keyword_memory: "top lexical overlap, can pick stale facts",
+            no_memory: "abstains because no history exists",
+          };
+          document.querySelector("#leaderboard").innerHTML = payload.leaderboard
+            .map(
+              (row) => `
+                <div class="rank">
+                  <div>
+                    <strong>${row.name}</strong>
+                    <span>${labels[row.name] || "memory strategy"}</span>
+                  </div>
+                  <div class="score">${row.correct}/${row.total}</div>
+                </div>
+              `,
+            )
+            .join("");
+        })
+        .catch(() => {});
+    </script>
+  </body>
+</html>
