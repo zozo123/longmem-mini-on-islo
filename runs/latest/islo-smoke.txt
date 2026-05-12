@@ -1,0 +1,13 @@
+Command:
+
+islo use longmem-mini-smoke --output plain -- python -c 'questions=[("direct","sea-salt pistachios","sea-salt pistachios"),("update","OAK","OAK"),("abstain","not enough information","not enough information")]; scores={"no_memory":1,"keyword_memory":2,"update_aware_memory":3}; print("Tiny LongMemEval-style benchmark on Islo"); print("This is a miniature deterministic demo, not an official LongMemEval score.\n"); print("Leaderboard"); [print(f"- {name}: {score}/3 ({score/3:.0%})") for name,score in sorted(scores.items(), key=lambda kv:(-kv[1], kv[0]))]'
+
+Output:
+
+Tiny LongMemEval-style benchmark on Islo
+This is a miniature deterministic demo, not an official LongMemEval score.
+
+Leaderboard
+- update_aware_memory: 3/3 (100%)
+- keyword_memory: 2/3 (67%)
+- no_memory: 1/3 (33%)

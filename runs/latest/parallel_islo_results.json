@@ -1,0 +1,71 @@
+{
+  "backend": "islo",
+  "generated_at": "2026-05-12T13:42:36+00:00",
+  "leaderboard": [
+    {
+      "accuracy": 1.0,
+      "correct": 3,
+      "name": "update_aware_memory",
+      "total": 3
+    },
+    {
+      "accuracy": 0.667,
+      "correct": 2,
+      "name": "keyword_memory",
+      "total": 3
+    },
+    {
+      "accuracy": 0.333,
+      "correct": 1,
+      "name": "no_memory",
+      "total": 3
+    }
+  ],
+  "scenario_count": 3,
+  "title": "Parallel tiny LongMemEval-style eval on Islo",
+  "trial_model": "one scenario per sandbox",
+  "trials": [
+    {
+      "ability": "abstention",
+      "backend": "islo-sandbox",
+      "case_id": "abstain",
+      "expected": "not enough information",
+      "passes": {
+        "keyword_memory": true,
+        "no_memory": true,
+        "update_aware_memory": true
+      },
+      "question": "What is Sam's jacket size?",
+      "raw_tail": "\u2192 Reconnecting to existing sandbox 'longmem-mini-abstain' (running)\n{\"case_id\": \"abstain\", \"backend\": \"islo-sandbox\", \"sandbox\": \"longmem-mini-abstain\", \"ability\": \"abstention\", \"question\": \"What is Sam's jacket size?\", \"expected\": \"not enough information\", \"passes\": {\"no_memory\": true, \"keyword_memory\": true, \"update_aware_memory\": true}}",
+      "sandbox": "longmem-mini-abstain"
+    },
+    {
+      "ability": "direct memory lookup",
+      "backend": "islo-sandbox",
+      "case_id": "direct",
+      "expected": "sea-salt pistachios",
+      "passes": {
+        "keyword_memory": true,
+        "no_memory": false,
+        "update_aware_memory": true
+      },
+      "question": "What snack should I buy for Mira's study group?",
+      "raw_tail": "\u2192 Reconnecting to existing sandbox 'longmem-mini-direct' (running)\n{\"case_id\": \"direct\", \"backend\": \"islo-sandbox\", \"sandbox\": \"longmem-mini-direct\", \"ability\": \"direct memory lookup\", \"question\": \"What snack should I buy for Mira's study group?\", \"expected\": \"sea-salt pistachios\", \"passes\": {\"no_memory\": false, \"keyword_memory\": true, \"update_aware_memory\": true}}",
+      "sandbox": "longmem-mini-direct"
+    },
+    {
+      "ability": "knowledge update",
+      "backend": "islo-sandbox",
+      "case_id": "update",
+      "expected": "OAK",
+      "passes": {
+        "keyword_memory": false,
+        "no_memory": false,
+        "update_aware_memory": true
+      },
+      "question": "For the Portland trip, which airport should I use now?",
+      "raw_tail": "\u2192 Reconnecting to existing sandbox 'longmem-mini-update' (running)\n{\"case_id\": \"update\", \"backend\": \"islo-sandbox\", \"sandbox\": \"longmem-mini-update\", \"ability\": \"knowledge update\", \"question\": \"For the Portland trip, which airport should I use now?\", \"expected\": \"OAK\", \"passes\": {\"no_memory\": false, \"keyword_memory\": false, \"update_aware_memory\": true}}",
+      "sandbox": "longmem-mini-update"
+    }
+  ]
+}

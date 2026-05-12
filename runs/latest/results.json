@@ -1,0 +1,209 @@
+{
+  "disclaimer": "This is a miniature deterministic demo, not an official LongMemEval score.",
+  "generated_at": "2026-05-12T13:42:25+00:00",
+  "leaderboard": [
+    {
+      "accuracy": 1.0,
+      "correct": 3,
+      "name": "update_aware_memory",
+      "results": [
+        {
+          "ability": "direct memory lookup",
+          "answer": "sea-salt pistachios",
+          "evidence_ids": [
+            "s1"
+          ],
+          "expected": "sea-salt pistachios",
+          "expected_evidence_ids": [
+            "s1"
+          ],
+          "passed": true,
+          "question": "What snack should I buy for Mira's study group?",
+          "question_id": "q_direct",
+          "rationale": "Used top keyword-overlap session s1 with score 3."
+        },
+        {
+          "ability": "knowledge update",
+          "answer": "OAK",
+          "evidence_ids": [
+            "s4"
+          ],
+          "expected": "OAK",
+          "expected_evidence_ids": [
+            "s4"
+          ],
+          "passed": true,
+          "question": "For the Portland trip, which airport should I use now?",
+          "question_id": "q_update",
+          "rationale": "Detected an update-style question and used newest matching session s4."
+        },
+        {
+          "ability": "abstention",
+          "answer": "not enough information",
+          "evidence_ids": [],
+          "expected": "not enough information",
+          "expected_evidence_ids": [],
+          "passed": true,
+          "question": "What is Sam's jacket size?",
+          "question_id": "q_abstain",
+          "rationale": "Retrieved memory did not contain an answerable fact."
+        }
+      ],
+      "total": 3
+    },
+    {
+      "accuracy": 0.667,
+      "correct": 2,
+      "name": "keyword_memory",
+      "results": [
+        {
+          "ability": "direct memory lookup",
+          "answer": "sea-salt pistachios",
+          "evidence_ids": [
+            "s1"
+          ],
+          "expected": "sea-salt pistachios",
+          "expected_evidence_ids": [
+            "s1"
+          ],
+          "passed": true,
+          "question": "What snack should I buy for Mira's study group?",
+          "question_id": "q_direct",
+          "rationale": "Picked top keyword-overlap session s1 with score 3."
+        },
+        {
+          "ability": "knowledge update",
+          "answer": "SFO",
+          "evidence_ids": [
+            "s3"
+          ],
+          "expected": "OAK",
+          "expected_evidence_ids": [
+            "s4"
+          ],
+          "passed": false,
+          "question": "For the Portland trip, which airport should I use now?",
+          "question_id": "q_update",
+          "rationale": "Picked top keyword-overlap session s3 with score 3."
+        },
+        {
+          "ability": "abstention",
+          "answer": "not enough information",
+          "evidence_ids": [],
+          "expected": "not enough information",
+          "expected_evidence_ids": [],
+          "passed": true,
+          "question": "What is Sam's jacket size?",
+          "question_id": "q_abstain",
+          "rationale": "Top keyword-overlap session s5 did not contain an answerable fact."
+        }
+      ],
+      "total": 3
+    },
+    {
+      "accuracy": 0.333,
+      "correct": 1,
+      "name": "no_memory",
+      "results": [
+        {
+          "ability": "direct memory lookup",
+          "answer": "not enough information",
+          "evidence_ids": [],
+          "expected": "sea-salt pistachios",
+          "expected_evidence_ids": [
+            "s1"
+          ],
+          "passed": false,
+          "question": "What snack should I buy for Mira's study group?",
+          "question_id": "q_direct",
+          "rationale": "No persisted chat history is available, so the strategy abstains."
+        },
+        {
+          "ability": "knowledge update",
+          "answer": "not enough information",
+          "evidence_ids": [],
+          "expected": "OAK",
+          "expected_evidence_ids": [
+            "s4"
+          ],
+          "passed": false,
+          "question": "For the Portland trip, which airport should I use now?",
+          "question_id": "q_update",
+          "rationale": "No persisted chat history is available, so the strategy abstains."
+        },
+        {
+          "ability": "abstention",
+          "answer": "not enough information",
+          "evidence_ids": [],
+          "expected": "not enough information",
+          "expected_evidence_ids": [],
+          "passed": true,
+          "question": "What is Sam's jacket size?",
+          "question_id": "q_abstain",
+          "rationale": "No persisted chat history is available, so the strategy abstains."
+        }
+      ],
+      "total": 3
+    }
+  ],
+  "questions": [
+    {
+      "ability": "direct memory lookup",
+      "evidence_ids": [
+        "s1"
+      ],
+      "expected": "sea-salt pistachios",
+      "id": "q_direct",
+      "prompt": "What snack should I buy for Mira's study group?"
+    },
+    {
+      "ability": "knowledge update",
+      "evidence_ids": [
+        "s4"
+      ],
+      "expected": "OAK",
+      "id": "q_update",
+      "prompt": "For the Portland trip, which airport should I use now?"
+    },
+    {
+      "ability": "abstention",
+      "evidence_ids": [],
+      "expected": "not enough information",
+      "id": "q_abstain",
+      "prompt": "What is Sam's jacket size?"
+    }
+  ],
+  "sessions": [
+    {
+      "at": "2026-04-02T09:00:00Z",
+      "id": "s1",
+      "speaker": "user",
+      "text": "Mira's study group meets Friday. She asked me to bring sea-salt pistachios."
+    },
+    {
+      "at": "2026-04-05T18:30:00Z",
+      "id": "s2",
+      "speaker": "user",
+      "text": "For the Portland trip, I first planned to fly from SFO because the morning train is easy."
+    },
+    {
+      "at": "2026-04-07T08:15:00Z",
+      "id": "s3",
+      "speaker": "assistant",
+      "text": "Reminder saved: Portland trip airport is SFO unless plans change."
+    },
+    {
+      "at": "2026-04-09T21:10:00Z",
+      "id": "s4",
+      "speaker": "user",
+      "text": "Update for Portland: use OAK instead of SFO. Construction near SFO makes OAK safer."
+    },
+    {
+      "at": "2026-04-11T12:00:00Z",
+      "id": "s5",
+      "speaker": "user",
+      "text": "Sam borrowed my small carry-on bag for the weekend."
+    }
+  ],
+  "title": "Tiny LongMemEval-style benchmark on Islo"
+}
