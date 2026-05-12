@@ -208,6 +208,46 @@
         font-size: 13px;
       }
 
+      .link-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .link-card {
+        display: block;
+        min-height: 160px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(244, 239, 227, 0.045);
+        text-decoration: none;
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .link-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--gold);
+        background: rgba(240, 184, 79, 0.08);
+      }
+
+      .link-card strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ink);
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+
+      .link-card span {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
       section {
         margin-top: 24px;
         padding: 24px;
@@ -320,7 +360,8 @@
         .grid,
         .split,
         .wide-split,
-        .stats {
+        .stats,
+        .link-strip {
           grid-template-columns: 1fr;
         }
       }
@@ -398,6 +439,34 @@
         </p>
       </section>
 
+      <section class="card">
+        <div class="eyebrow">Built with</div>
+        <h2>The two pieces this demo leans on</h2>
+        <div class="link-strip">
+          <a class="link-card" href="https://islo.dev/">
+            <strong>Islo.dev</strong>
+            <span>
+              Persistent, shareable sandboxes for coding agents. Here it runs one memory
+              scenario per isolated Python sandbox.
+            </span>
+          </a>
+          <a class="link-card" href="https://github.com/harbor-framework/harbor">
+            <strong>Harbor</strong>
+            <span>
+              Agent evaluation framework. Here it provides the task shape: instruction,
+              environment, verifier, solution, and reward file.
+            </span>
+          </a>
+          <a class="link-card" href="https://github.com/zozo123/longmem-mini-on-islo">
+            <strong>Code repo</strong>
+            <span>
+              Full source, generated results, HN post draft, eval report, and GitHub Pages
+              source for this tiny benchmark.
+            </span>
+          </a>
+        </div>
+      </section>
+
       <div class="grid">
         <article class="question card">
           <div class="label">Direct Lookup</div>
@@ -455,7 +524,7 @@
           <div class="eyebrow">Harbor</div>
           <h2>How Harbor is used</h2>
           <p>
-            Harbor is the eval wrapper. The demo includes a minimal task under
+            <a href="https://github.com/harbor-framework/harbor">Harbor</a> is the eval wrapper. The demo includes a minimal task under
             <code>harbor/longmem-mini/</code>: task metadata, an instruction, a Python
             environment image, a verifier script, and an oracle solution.
           </p>
@@ -483,7 +552,7 @@ harbor run -p harbor/longmem-mini -a oracle</code></pre>
           <div class="eyebrow">Islo</div>
           <h2>How Islo is used</h2>
           <p>
-            Islo is the execution and sharing layer. <code>islo.yaml</code> defines the
+            <a href="https://islo.dev/">Islo</a> is the execution and sharing layer. <code>islo.yaml</code> defines the
             lightweight Python sandbox. The repo can be cloned into an Islo environment,
             the benchmark can run there, and the static report can be served from inside
             the sandbox. We ran the three simple scenarios across three Islo Python sandboxes
