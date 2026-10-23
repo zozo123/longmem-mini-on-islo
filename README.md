@@ -1,14 +1,10 @@
 # Tiny Long-Memory Benchmark on Islo
 
-A 60-second demo of long-term memory evaluation, built for an Islo sandbox and wrapped as a tiny Harbor task.
+A toy, deterministic [LongMemEval](https://github.com/xiaowu0162/LongMemEval)-style demo ([paper](https://arxiv.org/abs/2410.10813)) by Yossi Eliaz, May 2026: three hand-written memory strategies answer three handcrafted questions, run in islo.dev sandboxes and packaged as a [Harbor](https://github.com/harbor-framework/harbor) task.
 
-This is **not** an official LongMemEval score. It is a small, inspectable demo that shows why long-memory systems need to handle retrieval, updates, and abstention.
+This is **not** an official LongMemEval score. It is a small, inspectable demo for anyone curious why long-memory systems need to handle retrieval, updates, and abstention.
 
-Project page:
-
-```text
-https://zozo123.github.io/longmem-mini-on-islo/
-```
+Project page: https://zozo123.github.io/longmem-mini-on-islo/
 
 ## What This Demo Benchmarks
 
@@ -26,7 +22,7 @@ It compares 3 simple memory approaches:
 | `keyword_memory` | Retrieves the best keyword-overlap session. | `2/3` |
 | `update_aware_memory` | Retrieves relevant sessions, prefers newer facts for update questions, and abstains when evidence is missing. | `3/3` |
 
-The goal is not to win a benchmark. The goal is to make the failure modes obvious enough to explain in one Hacker News page.
+The goal is not to win a benchmark. The goal is to make the failure modes obvious.
 
 ## Parallel Sandbox Eval
 
@@ -82,9 +78,7 @@ The script writes:
 
 ## Run on Islo
 
-The Islo CLI is authenticated on this machine and `islo.yaml` validates. A small parallel eval was run across three Islo Python sandboxes and saved in `runs/latest/parallel_islo_results.json`.
-
-After publishing the repo to GitHub:
+`islo.yaml` validates. A small parallel eval was run once (2026-05-12) across three Islo Python sandboxes and saved in `runs/latest/parallel_islo_results.json`.
 
 ```bash
 islo use longmem-mini --source github://zozo123/longmem-mini-on-islo
@@ -97,26 +91,20 @@ That gives you a public one-page result board backed by the same generated JSON.
 
 ## Run as a Harbor Task
 
-Harbor is the evaluation wrapper. The direct Python script is the demo; Harbor makes it look like a real benchmark task.
+Harbor is the evaluation wrapper. The direct Python script is the demo; Harbor packages it as an eval task.
 
 ```bash
 harbor run -p harbor/longmem-mini -a oracle
 ```
 
-On Islo:
-
-```bash
-harbor run -p harbor/longmem-mini -a oracle --env islo
-```
-
 The Harbor verifier runs the same tiny benchmark and writes `/logs/verifier/reward.txt`.
-Local Harbor runs require Docker to be running. On this machine, the local Harbor command reached Harbor but could not start because Docker was not running.
+The Harbor task is packaged but has not been run end to end (local Docker was unavailable when this was built).
 
-The currently installed Harbor CLI here does not expose `islo` as an environment option. The task wrapper is still included so the repo is ready for a Docker-backed Harbor run or a Harbor build that exposes the Islo environment.
+The Harbor CLI version used to build this did not list `islo` as an environment option, so there is no Harbor-on-Islo run. The task wrapper is included for a Docker-backed Harbor run or a Harbor build that exposes an Islo environment.
 
 See `EVAL_REPORT.md` for the exact run status.
 
-## Why This Is Good
+## What the demo shows
 
 Terminal-Bench is great for terminal/tool-using agents, but retrieval and long-term memory need different smoke tests. This demo compresses the long-memory problem into a tiny artifact:
 
@@ -125,14 +113,4 @@ Terminal-Bench is great for terminal/tool-using agents, but retrieval and long-t
 - It produces deterministic JSON, so a one-page result board can be checked into GitHub Pages.
 - It maps cleanly to Islo and Harbor without requiring the full LongMemEval dataset.
 
-The scale-up path is straightforward: replace the 3 handcrafted questions with LongMemEval or LoCoMo tasks, then use Harbor + Islo to run isolated trials in parallel.
-
-## GitHub One-Pager
-
-The page lives in `site/index.html`. After running `python demo.py`, publish `site/` with GitHub Pages or a separate `zozo123.github.io/<project>` page repo.
-
-Suggested HN title:
-
-```text
-Show HN: Tiny long-memory benchmark running in an Islo sandbox
-```
+The scale-up path is straightforward: replace the 3 handcrafted questions with LongMemEval or [LoCoMo](https://github.com/snap-research/locomo) tasks, then use Harbor + Islo to run isolated trials in parallel.

@@ -122,7 +122,7 @@ harbor run -p harbor/longmem-mini -a oracle --env islo
 
 Result: the currently installed Harbor CLI in this environment does not expose `islo` as an environment option. Its available environments are `docker`, `daytona`, `e2b`, `modal`, `runloop`, and `gke`.
 
-The public post should therefore say:
+In short:
 
 - The small eval was run locally and across three Islo sandboxes.
 - The benchmark is packaged as a Harbor task.
